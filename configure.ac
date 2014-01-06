@@ -1,0 +1,15 @@
+AC_INIT([printer], [0.0.1], [ilya.sumb@gmail.com])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_PREFIX_DEFAULT([./build])
+
+AC_PROG_CXX
+
+AC_CONFIG_MACRO_DIR([m4/])
+PTHREAD_LIBS+=-lpthread
+ACX_PTHREAD
+LIBS="$PTHREAD_LIBS $LIBS"
+CXXFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
