@@ -2,14 +2,15 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 dist_data_DATA = m4
 bin_PROGRAMS = printer
-printer_SOURCES = src/main.cpp \
-				  src/builder.h \
-				  src/printer_func.h \
-				  src/spec_func.h \
-				  src/spec_thread.h 
-nodist_printer_SOURCES = src/symbols.h
-BUILT_SOURCES = src/symbols.h
-CLEANFILES = src/symbols.h
+printer_SOURCES = src/main.cpp
 
-src/symbols.h: src/font/symbols
-	cd src/font && ./translator.sh > ../symbols.h
+nodist_printer_SOURCES = src/doom_font.h \
+						 src/banner_font.h
+BUILT_SOURCES = src/doom_font.h \
+				src/banner_font.h
+
+src/doom_font.h: src/font/doom_font src/font/translator.sh
+	cd src/font && ./translator.sh doom_font 8 > ../doom_font.h
+
+src/banner_font.h: src/font/banner_font src/font/translator.sh
+	cd src/font && ./translator.sh banner_font 7 > ../banner_font.h

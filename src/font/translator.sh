@@ -1,74 +1,114 @@
 #!/usr/bin/env bash
 
-height=8
+height=
+fontName=
 
-function translateNewLine {
-	newLine='\\n\n\\n\n\\n\n\\n\n\\n\n\\n\n\\n\n\\n'
-	echo -e $newLine | translateSymbol "eol"
+function pragma {
+	echo "#pragma $1"
 }
 
-function translateSpace {
-	cat symbols | getSymbol 1 | translateSymbol "space"
+function include {
+	echo "#include $1"
+}
+
+function class {
+	echo -e "class $1 {\npublic:\n$2\n};"
+}
+
+function translateNewLine {
+	local newLine='\\\\n'
+
+	for i in `seq 1 $(($height - 1))`; do
+		newLine=$newLine'\n\\\\n'
+	done
+
+	echo -e $newLine | translateSymbol '\\n'
+}
+
+function translateSpecSymbols {
+	getSymbol 1  | escape | translateSymbol " "
+	getSymbol 2  | escape | translateSymbol "!"
+	getSymbol 3  | escape | translateSymbol "?"
+	getSymbol 4  | escape | translateSymbol "@"
+	getSymbol 5  | escape | translateSymbol "#"
+	getSymbol 6  | escape | translateSymbol "$"
+	getSymbol 7  | escape | translateSymbol "%"
+	getSymbol 8  | escape | translateSymbol "^"
+	getSymbol 9  | escape | translateSymbol "&"
+	getSymbol 10 | escape | translateSymbol "*"
+	getSymbol 11 | escape | translateSymbol "("
+	getSymbol 12 | escape | translateSymbol ")"
+	getSymbol 13 | escape | translateSymbol "-"
+	getSymbol 14 | escape | translateSymbol "_"
+    getSymbol 15 | escape | translateSymbol "+"
+	getSymbol 16 | escape | translateSymbol "="
+	getSymbol 17 | escape | translateSymbol '\\\\'
+	getSymbol 18 | escape | translateSymbol "|"
+	getSymbol 19 | escape | translateSymbol "/"
+	getSymbol 20 | escape | translateSymbol "."
+	getSymbol 21 | escape | translateSymbol ","
 }
 
 function translateAlpha {
-	symbol=( {a..z} )
-	offset=12
+	local symbol=( {a..z} )
+	local offset=32
 
-	for i in $(seq 0 25); do
-		cat symbols | getSymbol $(($i + $offset)) | translateSymbol ${symbol[i]} | escape
+	for i in `seq 0 25`; do
+		getSymbol $(($i + $offset)) | escape | translateSymbol ${symbol[i]}
 	done
 }
 
 function translateDigits {
-	number[0]="zero"
-	number[1]="one"
-	number[2]="two"
-	number[3]="three"
-	number[4]="four"
-	number[5]="five"
-	number[6]="six"
-	number[7]="seven"
-	number[8]="eight"
-	number[9]="nine"
+	local offset=22
 
-	offset=2
-
-	for i in $(seq 0 9); do
-		cat symbols | getSymbol $(($i + $offset)) | translateSymbol ${number[i]} | escape
+	for i in `seq 0 9`; do
+		getSymbol $(($i + $offset)) | escape | translateSymbol $i
 	done
 }
 
 function translateHeight() {
-	echo "static const size_t height = $height;"
+	echo "font_t::set_height($height);"
 }
 
 function getSymbol() { 
-	a=$(($1 * $height - 7)); 
-	b=$(($1 * $height)); 
-	cat symbols | sed "$a,$b!d"
+	local a=$(($1 * $height - ($height - 1))); 
+	local b=$(($1 * $height)); 
+	cat $fontName | sed "$a,$b!d"
 } 
 
 function translateSymbol() {
 	IFS=
-	echo "static const char* $1[] = {"
-	while read -r line; do echo "\"$line\","; done
-	echo "};"
+	echo "{"
+	echo "const char* symbol[] = {"
+         while read -r line; do echo "\"$line\","; done
+    echo "};"
+	echo "font_t::add('$1', std::vector<std::string>(symbol, symbol + $height));"
+	echo "}"
 }
 
 function escape() {
 	IFS=
-	while read -r line; do echo "$line" | sed 's:\\:\\\\:g'; done
+	while read -r line; do echo "$line" | sed 's:\\:\\\\\\\\:g'; done
 }
 
 function translateAll() {
-	echo -e '#pragma once\nnamespace symbols {'
-	translateDigits
-	translateAlpha
-	translateSpace
-	translateNewLine
-	translateHeight
-	echo "};"
+	constructorBody="$(translateDigits)\n"
+	constructorBody="$constructorBody$(translateAlpha)\n"
+	constructorBody="$constructorBody$(translateSpecSymbols)\n"
+	constructorBody="$constructorBody$(translateNewLine)\n"
+	constructorBody="$constructorBody$(translateHeight)\n"
+
+	constructor="$fontName() {\n$constructorBody}"
+
+	#echo -e $constructor
+	# Print result class
+	pragma once
+	include '<string>'
+	include '<vector>'
+	include '"font.h"'
+	class "$fontName : public font_t" "$constructor"
 }
 
+fontName=$1
+height=$2
 translateAll
