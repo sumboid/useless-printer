@@ -2,7 +2,12 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 dist_data_DATA = m4
 bin_PROGRAMS = printer
-printer_SOURCES = src/main.cpp
+printer_SOURCES = src/main.cpp \
+				  src/font.cpp \
+				  src/color.cpp \
+				  src/builder.cpp \
+				  src/printer_func.cpp \
+				  src/spec_thread.cpp
 
 nodist_printer_SOURCES = src/doom_font.h \
 						 src/banner_font.h

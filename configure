@@ -3204,6 +3204,8 @@ fi
 
 
 
+CXXFLAGS="$CXXFLAGS -std=c++11"
+
 PTHREAD_LIBS+=-lpthread
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
@@ -4350,7 +4352,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 LIBS="$PTHREAD_LIBS $LIBS"
-CXXFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 
 
 ac_config_files="$ac_config_files Makefile"

@@ -51,9 +51,11 @@ function translateSpecSymbols {
 
 function translateAlpha {
 	local symbol=( {a..z} )
+	local csymbol=( {A..Z} )
 	local offset=32
 
 	for i in `seq 0 25`; do
+		getSymbol $(($i + $offset)) | escape | translateSymbol ${symbol[i]}
 		getSymbol $(($i + $offset)) | escape | translateSymbol ${symbol[i]}
 	done
 }
