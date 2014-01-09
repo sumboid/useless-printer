@@ -6,11 +6,11 @@
 
 class builder_t {
 private:
-	std::vector<spec_thread_t*> threads;
+  std::vector<spec_thread_t*> threads;
 
 public:
-	~builder_t();
+  ~builder_t();
 
-	void add(spec_func_t* func);
-	void run();
+  void add(spec_func_t* func);
+  void run();
 };
