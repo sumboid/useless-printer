@@ -1,4 +1,4 @@
-AC_INIT([printer], [0.0.1], [ilya.sumb@gmail.com])
+AC_INIT([printer], [0.9], [ilya.sumb@gmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PREFIX_DEFAULT([./build])
 
